@@ -1,0 +1,31 @@
+# @package _group_
+seed: 42
+load_seed: 42
+load: 0
+load_dir: 0
+load_dir_2: 0
+pseudo_thres: 10
+pseudo_interval: 150
+use_evo: 0
+setup: metaworld
+relabel_num_tasks: 3
+relabel_range: 10
+load_log_std_bounds: [-20,2]
+base_path:
+save_dir: ${setup.base_path}/logs/${setup.id}
+device: cuda:0
+id: sample
+description: Sample Task
+tags:
+  # - sac
+  # - metaworld
+  # - baseline
+  # - single_task
+git:
+  commit_id:
+  has_uncommitted_changes:
+  issue_id:
+date:
+slurm_id:
+debug:
+  should_enable: False
