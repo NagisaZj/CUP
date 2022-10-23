@@ -35,6 +35,7 @@ This repository is the official implementation of CUP: Critic-Guided Policy Reus
   pip install -e .
   ```
 ## Usage
+CUP:
 <font color='red'> CAUTION: Remember to replace setup.load_dir,  setup.load_dir_2, and setup.load_dir_3 with your own absolute path to the corresponding directories.</font>
 
   ```
@@ -66,4 +67,7 @@ setup.load_dir_3=/data2/zj/NewMTRL/backup/90f2497ff4cee27c0d30fbc66e6ba205f94808
 setup.load=1 \
 setup.load_log_std_bounds=[-20,2]
   ```
-Ohter available environments can be seen in ./config/env.
+
+SAC baseline: Comment line 205-207 in mtrl/experiment/multitask.py.
+
+Other available environments can be seen in ./config/env.
