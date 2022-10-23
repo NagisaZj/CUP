@@ -31,8 +31,9 @@ This repository is the official implementation of CUP: Critic-Guided Policy Reus
   pip install -r requirements/dev.txt
   cd ./src/mtenv
   pip install -e .
+  cd ../metaworld
+  pip install -e .
   ```
-You also need to install the latest Meta-World at https://github.com/rlworkgroup/metaworld.
 ## Usage
 <font color='red'> CAUTION: Remember to replace setup.load_dir,  setup.load_dir_2, and setup.load_dir_3 with your own absolute path to the corresponding directories.</font>
 
