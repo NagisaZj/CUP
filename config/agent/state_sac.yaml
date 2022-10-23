@@ -22,3 +22,4 @@ builder:
   critic_tau: 0.005
   critic_target_update_freq: 1
   encoder_tau: 0.05
+  use_expert: 1

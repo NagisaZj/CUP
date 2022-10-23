@@ -196,15 +196,15 @@ class Experiment(experiment.Experiment):
         # self.envs_to_exclude_during_training = [0,1,2,3,4,5,6,7,8,9,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,40,41,42,43,44,45,46,47,48,49]
         # self.envs_to_exclude_during_training = range(10, 30)
         # self.envs_to_exclude_during_training = []
-        use_expert = False
-        expert_id = None
-        relabel_id = None
-        reuse = False
-        reuse_id = 0
-        ori = False
-        use_expert = True
-        expert_id = 1
-        relabel_id = 2
+        # use_expert = False
+        # expert_id = None
+        # relabel_id = None
+        # reuse = False
+        # reuse_id = 0
+        # ori = False
+        use_expert = self.config.agent.use_expert
+        # expert_id = 1
+        # relabel_id = 2
         episode_samples = {'multitask_obs':[],"action":[],"reward":[],"next_multitask_obs":[],"done_bool":[],"task_obs":[],"info":[],"t":[],"expert_mean":[],"expert_var":[]} #actually log std, mu before tanh
         for step in range(self.start_step, exp_config.num_train_steps):
 
