@@ -261,7 +261,7 @@ class Experiment(multitask.Experiment):
             plt.plot(np.arange(500), Q_s[:,j]-Q_s[:,0],label=labels[j], linewidth=3,c=color_list[j])
         plt.legend(loc='best', prop={'size': 26.0}, frameon=True, ncol=1)
         plt.tick_params(labelsize=17)
-        plt.title('PPick-Place-Wall', fontdict={'fontsize': 30})
+        plt.title('Pick-Place-Wall', fontdict={'fontsize': 30})
         plt.xlabel('Environment Steps', fontsize=20)
         plt.show()
         # print(success)

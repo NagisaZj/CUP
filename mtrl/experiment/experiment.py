@@ -118,7 +118,7 @@ class Experiment(checkpointable.Checkpointable):
             if self.config.setup.load_dir != '0':
                 config_tmp = copy.deepcopy(self.config)
                 if '43_2' in self.config.setup.load_dir:
-                    with open('/data2/zj/NewMTRL/config-disjoint.txt', 'rb') as f:
+                    with open('/data1/zj/NewMTRL/config-disjoint.txt', 'rb') as f:
                         config_tmp = pickle.load(f)
                 # config_tmp.agent.multitask.should_use_disjoint_policy=False
                 self.source_agent = hydra.utils.instantiate(
@@ -135,6 +135,8 @@ class Experiment(checkpointable.Checkpointable):
                 self.source_agent.actor.log_std_bounds=self.config.setup.load_log_std_bounds
                 self.agent.source_agents.append(self.source_agent)
             if self.config.setup.load_dir_2!='0':
+                if '43_2' not in self.config.setup.load_dir_2:
+                    config_tmp = copy.deepcopy(self.config)
                 self.source_agent_2 = hydra.utils.instantiate(
                     config_tmp.agent.builder,
                     env_obs_shape=env_obs_shape,
@@ -169,7 +171,7 @@ class Experiment(checkpointable.Checkpointable):
                 self.source_agent_3.actor.log_std_bounds = self.config.setup.load_log_std_bounds
                 self.agent.source_agents.append(self.source_agent_3)
 
-            # with open('/data2/zj/NewMTRL/config_810.txt', 'rb') as f:
+            # with open('/data1/zj/NewMTRL/config_810.txt', 'rb') as f:
             #     config_tmp = pickle.load(f)
             # self.source_agent_4 = hydra.utils.instantiate(
             #     config_tmp.agent.builder,
@@ -186,7 +188,7 @@ class Experiment(checkpointable.Checkpointable):
             # self.agent.source_agents.append(self.source_agent_4)
 
 
-        # paths = ['/data2/zj/NewMTRL/logs/90f2497ff4cee27c0d30fbc66e6ba205f94808ba4ea16e057df58e73_issue_None_seed_1632/model','/data2/zj/NewMTRL/logs/90f2497ff4cee27c0d30fbc66e6ba205f94808ba4ea16e057df58e73_issue_None_seed_1633/model','/data2/zj/NewMTRL/logs/90f2497ff4cee27c0d30fbc66e6ba205f94808ba4ea16e057df58e73_issue_None_seed_1634/model']
+        # paths = ['/data1/zj/NewMTRL/logs/90f2497ff4cee27c0d30fbc66e6ba205f94808ba4ea16e057df58e73_issue_None_seed_1421/model','/data1/zj/NewMTRL/logs/90f2497ff4cee27c0d30fbc66e6ba205f94808ba4ea16e057df58e73_issue_None_seed_1425/model','/data1/zj/NewMTRL/logs/90f2497ff4cee27c0d30fbc66e6ba205f94808ba4ea16e057df58e73_issue_None_seed_1466/model']
         # for p in paths:
         #     agent = hydra.utils.instantiate(
         #             config.agent.builder,
