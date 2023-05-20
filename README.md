@@ -65,9 +65,9 @@ agent.multitask.actor_cfg.should_condition_encoder_on_task_info=True \
 agent.multitask.actor_cfg.should_concatenate_task_info_with_encoder=True \
 setup.relabel_num_tasks=1 \
 setup.relabel_range=10 \
-setup.load_dir=/data2/zj/NewMTRL/backup/90f2497ff4cee27c0d30fbc66e6ba205f94808ba4ea16e057df58e73_issue_None_seed_43_2/model \
-setup.load_dir_2=/data2/zj/NewMTRL/backup/90f2497ff4cee27c0d30fbc66e6ba205f94808ba4ea16e057df58e73_issue_None_seed_43_2/model \
-setup.load_dir_3=/data2/zj/NewMTRL/backup/90f2497ff4cee27c0d30fbc66e6ba205f94808ba4ea16e057df58e73_issue_None_seed_253/model \
+setup.load_dir=/data3/zj/CUP/source_policies/90f2497ff4cee27c0d30fbc66e6ba205f94808ba4ea16e057df58e73_issue_None_seed_43_2/model \
+setup.load_dir_2=/data3/zj/CUP/source_policies/90f2497ff4cee27c0d30fbc66e6ba205f94808ba4ea16e057df58e73_issue_None_seed_43_2/model \
+setup.load_dir_3=/data3/zj/CUP/source_policies/90f2497ff4cee27c0d30fbc66e6ba205f94808ba4ea16e057df58e73_issue_None_seed_253/model \
 setup.load=1 \
 setup.load_log_std_bounds=[-20,2]
   ```
@@ -96,12 +96,12 @@ agent.multitask.actor_cfg.should_condition_encoder_on_task_info=True \
 agent.multitask.actor_cfg.should_concatenate_task_info_with_encoder=True \
 setup.relabel_num_tasks=1 \
 setup.relabel_range=10 \
-setup.load_dir=/data2/zj/NewMTRL/backup/90f2497ff4cee27c0d30fbc66e6ba205f94808ba4ea16e057df58e73_issue_None_seed_43_2/model \
-setup.load_dir_2=/data2/zj/NewMTRL/backup/90f2497ff4cee27c0d30fbc66e6ba205f94808ba4ea16e057df58e73_issue_None_seed_43_2/model \
-setup.load_dir_3=/data2/zj/NewMTRL/backup/90f2497ff4cee27c0d30fbc66e6ba205f94808ba4ea16e057df58e73_issue_None_seed_253/model \
+setup.load_dir=/data3/zj/CUP/source_policies/90f2497ff4cee27c0d30fbc66e6ba205f94808ba4ea16e057df58e73_issue_None_seed_43_2/model \
+setup.load_dir_2=/data3/zj/CUP/source_policies/90f2497ff4cee27c0d30fbc66e6ba205f94808ba4ea16e057df58e73_issue_None_seed_43_2/model \
+setup.load_dir_3=/data3/zj/CUP/source_policies/90f2497ff4cee27c0d30fbc66e6ba205f94808ba4ea16e057df58e73_issue_None_seed_253/model \
 setup.load=1 \
 setup.load_log_std_bounds=[-20,2] \
-agent.use_expert=0
+agent.multitask.use_expert=0
   ```
 
 Other available environments can be seen in ./config/env.

@@ -202,7 +202,7 @@ class Experiment(experiment.Experiment):
         # reuse = False
         # reuse_id = 0
         # ori = False
-        use_expert = self.config.agent.use_expert
+        use_expert = self.config.agent.multitask.use_expert
         # expert_id = 1
         # relabel_id = 2
         episode_samples = {'multitask_obs':[],"action":[],"reward":[],"next_multitask_obs":[],"done_bool":[],"task_obs":[],"info":[],"t":[],"expert_mean":[],"expert_var":[]} #actually log std, mu before tanh

@@ -30,3 +30,4 @@ actor_cfg:
     num_experts: 4
     should_use: False
 critic_cfg: ${agent.multitask.actor_cfg}
+use_expert: 1

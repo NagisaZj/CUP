@@ -69,6 +69,7 @@ class Agent(AbstractAgent):
         loss_reduction: str = "mean",
         cfg_to_load_model: Optional[ConfigType] = None,
         should_complete_init: bool = True,
+            # use_expert=True
     ):
         self.idx = None
         self.significance = None
@@ -1256,6 +1257,7 @@ class ExpertAgent(AbstractAgent):
         loss_reduction: str = "mean",
         cfg_to_load_model: Optional[ConfigType] = None,
         should_complete_init: bool = True,
+            # use_expert=True
     ):
         self.idx = None
         self.significance = None
