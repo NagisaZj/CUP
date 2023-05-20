@@ -29,9 +29,12 @@ This repository is the official implementation of CUP: Critic-Guided Policy Reus
   git add .
   git commit -m init
   pip install -r requirements/dev.txt
+  cd ./src
+  git clone git@github.com:NagisaZj/metaworld-cup.git
+  git clone git@github.com:NagisaZj/mtenv.git
   cd ./src/mtenv
   pip install -e .
-  cd ../metaworld
+  cd ../metaworld-cup
   pip install -e .
   ```
 ## Usage
