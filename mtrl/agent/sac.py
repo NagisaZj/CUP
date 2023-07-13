@@ -350,12 +350,33 @@ class Agent(AbstractAgent):
             TensorType: target values.
         """
         mtobs = MTObs(env_obs=batch.next_env_obs, task_obs=None, task_info=task_info)
-        _, policy_action, log_pi, _ = self.actor(mtobs=mtobs)
+        mu, policy_action, log_pi, log_std = self.actor(mtobs=mtobs)
+        # mu, pi, log_pi, log_std, old_mu = self.actor.my_forward(mtobs=mtobs, detach_encoder=True)
         target_Q1, target_Q2 = self.critic_target(mtobs=mtobs, action=policy_action)
-        return (
-            torch.min(target_Q1, target_Q2)
-            - self.get_alpha(env_index=batch.task_obs).detach() * log_pi
-        )
+        # target_Q1, target_Q2 = self.critic_target(mtobs=mtobs, action=pi, detach_encoder=True)
+        Q = torch.min(target_Q1, target_Q2)#.detach()
+        # min_Q = torch.min(target_Q1, target_Q2).detach()
+
+        # Q = Q / 3
+        Q = Q - self.get_alpha(batch.task_obs).detach() * log_pi
+        # print(target_Q1.shape,self.get_alpha(batch.task_obs).detach().shape,log_pi.shape,torch.sum(self.get_alpha(batch.task_obs).detach() * log_pi,-1,keepdim=True).shape)
+        # use_expert
+
+        # if 1:
+        #     means = batch.expert_means
+        #     vars = batch.expert_vars
+        #     for i in range(3):
+        #         Q_e = torch.zeros_like(Q)
+        #         std_e = vars[:,i,:].exp()
+        #         for j in range(1):
+        #             noise = torch.randn_like(means[:,i,:])
+        #             pi_e_n = means[:,i,:] + noise * std_e
+        #             log_pi_e = _gaussian_logprob(noise, vars[:,i,:])
+        #             new_mean, pi_e_n, _ = _squash(means[:,i,:], pi_e_n, None)
+        #             Q_e_1_n, Q_e_2_n = self.critic_target(mtobs=mtobs, action=pi_e_n, detach_encoder=True)
+        #             Q_e = (torch.min(Q_e_1_n, Q_e_2_n)) - self.get_alpha(batch.task_obs).detach() * log_pi_e
+        #         Q = torch.max(Q,Q_e)
+        return Q
 
     def update_critic(
         self,
@@ -624,6 +645,7 @@ class Agent(AbstractAgent):
             target_Q1, target_Q2 = self.critic_target(mtobs=mtobs, action=pi, detach_encoder=True)
             # Q1, Q2 = target_Q1.clone(), target_Q2.clone()
             Q = torch.max(target_Q1, target_Q2).detach()
+            Q = Q -self.get_alpha(batch.task_obs).detach() * log_pi
             # min_Q = torch.min(target_Q1, target_Q2).detach()
             min_Q = ((target_Q1 + target_Q2) / 2).detach()
             std = log_std.exp()
@@ -637,9 +659,13 @@ class Agent(AbstractAgent):
                 # Q2 += Q_2_n
                 # min_Q = min_Q + (torch.min(Q_1_n, Q_2_n)).detach()
                 min_Q = min_Q + ((Q_1_n + Q_2_n) / 2).detach()
+                log_pi_e = _gaussian_logprob(noise, log_std)
+                Q = Q - self.get_alpha(batch.task_obs).detach() * log_pi_e#
+
+
             Q = Q / 3
             min_Q = min_Q / 3
-            Q = Q - torch.sum(self.get_alpha(batch.task_obs).detach() * log_std,-1,keepdim=True)
+            # Q = Q - torch.sum(self.get_alpha(batch.task_obs).detach() * log_std,-1,keepdim=True)
             # Q1 = Q1 / 3
             # Q2 = Q2 / 3
             # t_q = torch.min(Q1, Q2)- self.get_alpha(env_index=batch.task_obs).detach() * log_pi
@@ -656,13 +682,15 @@ class Agent(AbstractAgent):
                     noise = torch.randn_like(means[:,i,:])
                     pi_e_n = means[:,i,:] + noise * std_e
                     new_mean, pi_e_n, _ = _squash(means[:,i,:], pi_e_n, None)
+                    log_pi_e = _gaussian_logprob(noise, vars[:,i,:])
                     Q_e_1_n, Q_e_2_n = self.critic_target(mtobs=mtobs, action=pi_e_n, detach_encoder=True)
                     Q_e = Q_e + (torch.max(Q_e_1_n, Q_e_2_n)).detach()
+                    Q_e = Q_e - self.get_alpha(batch.task_obs).detach() * log_pi_e
                     # mi_Q_e = mi_Q_e + (torch.min(Q_e_1_n, Q_e_2_n)).detach()
                     mi_Q_e = mi_Q_e + ((Q_e_1_n+ Q_e_2_n)/2).detach()
                 Q_e = Q_e / 3
                 mi_Q_e = mi_Q_e / 3
-                Q_e = Q_e - torch.sum(self.get_alpha(batch.task_obs).detach() * vars[:,i,:], -1, keepdim=True)
+                # Q_e = Q_e - torch.sum(self.get_alpha(batch.task_obs).detach() * vars[:,i,:], -1, keepdim=True)
                 Q_e_all.append(Q_e)
                 min_Q_all.append(mi_Q_e)
                 kld_tmp = gaussian_kld(mu, log_std * 1, new_mean, vars[:,i,:] * 1)

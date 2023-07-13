@@ -261,7 +261,7 @@ class Experiment(experiment.Experiment):
                     episode_samples = {'multitask_obs': [], "action": [], "reward": [], "next_multitask_obs": [],
                                        "done_bool": [], "task_obs": [], "info": [], "t": [], "expert_mean": [],
                                        "expert_var": []}
-
+            ori = True
             if step % self.max_episode_steps == 0:  # todo
                 ori = True if np.random.rand()<=1.3 else False
                 if step <= exp_config.init_steps*5:
@@ -474,6 +474,8 @@ class Experiment(experiment.Experiment):
                 #         use_expert = True
                 #         expert_id = 1
                 #         relabel_id = 2
+                    expert_id = 1
+                    relabel_id = 2
                     if step >= exp_config.init_steps*3:
                         self.agent.update(self.replay_buffer, self.logger, step,use_expert=use_expert,expert_id=expert_id,relabel_id=relabel_id)
                     else:
