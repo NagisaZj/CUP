@@ -169,24 +169,24 @@ class Experiment(experiment.Experiment):
         sets = [[], [], []]
         labels = np.zeros([num_tasks], dtype=np.int)
         print(multitask_obs['env_obs'][0])
-        for i in range(multitask_obs['env_obs'].shape[0]):
-            has_object_1 = not (torch.mean(multitask_obs['env_obs'][i,4:7])==0)
-            has_object_2 = not (torch.mean(multitask_obs['env_obs'][i, 11:14]) == 0)
-            if not has_object_1:
-                sets[0].append(i)
-                labels[i] = 0
-            else:
-                if not has_object_2:
-                    sets[1].append(i)
-                    labels[i] = 1
-                else:
-                    sets[2].append(i)
-                    labels[i] = 2
-        for i in range(3):
-            print(sets[i],labels)
+        # for i in range(multitask_obs['env_obs'].shape[0]):
+        #     has_object_1 = not (torch.mean(multitask_obs['env_obs'][i,4:7])==0)
+        #     has_object_2 = not (torch.mean(multitask_obs['env_obs'][i, 11:14]) == 0)
+        #     if not has_object_1:
+        #         sets[0].append(i)
+        #         labels[i] = 0
+        #     else:
+        #         if not has_object_2:
+        #             sets[1].append(i)
+        #             labels[i] = 1
+        #         else:
+        #             sets[2].append(i)
+        #             labels[i] = 2
+        # for i in range(3):
+        #     print(sets[i],labels)
         success_eval = 0
-        self.envs_to_exclude_during_training=range(20,30)
-        self.envs_to_exclude_during_training =range(0,20)
+        # self.envs_to_exclude_during_training=range(20,30)
+        # self.envs_to_exclude_during_training =range(0,20)
         self.envs_to_exclude_during_training =[]
         # for i in range(20,30):
         #     self.envs_to_exclude_during_training.append(i)
@@ -266,41 +266,41 @@ class Experiment(experiment.Experiment):
                 ori = True if np.random.rand()<=1.3 else False
                 if step <= exp_config.init_steps*5:
                     ori=True
-                if np.random.rand()<=0.05:
+                if np.random.rand()<=-0.05:
                     reuse = True
                     reuse_id = np.random.choice([0,1,2])
                 else:
                     reuse = False
-                    if "success" in self.metrics_to_track:
-                        success = (success > 0).astype("float")
-
-                        success_cnt[:, multitask_pointer] = success
-                        multitask_pointer = (multitask_pointer + 1) % (success_cnt.shape[1])
-                        for i in range(success_cnt.shape[0]):
-                            if i not in success_sets[labels[i]]:
-                                if np.mean(success_cnt[i]) == 1:
-                                    success_sets[labels[i]].append(i)
-                        print('success set: ', success_sets)
-
-                        for i in range(num_tasks):
-                            if success[i]:
-                                success_goals[i,pointer[i],:] = tmp_obs["env_obs"][i][-3:]
-                                pointer_cnt[i] += 1
-                                pointer[i] = (pointer[i]+1)%success_goals.shape[1]
-                                has_goals[i] = 1
-                        print('success set: ', pointer_cnt)
+                    # if "success" in self.metrics_to_track:
+                    #     success = (success > 0).astype("float")
+                    #
+                    #     success_cnt[:, multitask_pointer] = success
+                    #     multitask_pointer = (multitask_pointer + 1) % (success_cnt.shape[1])
+                    #     for i in range(success_cnt.shape[0]):
+                    #         if i not in success_sets[labels[i]]:
+                    #             if np.mean(success_cnt[i]) == 1:
+                    #                 success_sets[labels[i]].append(i)
+                    #     print('success set: ', success_sets)
+                    #
+                    #     for i in range(num_tasks):
+                    #         if success[i]:
+                    #             success_goals[i,pointer[i],:] = tmp_obs["env_obs"][i][-3:]
+                    #             pointer_cnt[i] += 1
+                    #             pointer[i] = (pointer[i]+1)%success_goals.shape[1]
+                    #             has_goals[i] = 1
+                    #     print('success set: ', pointer_cnt)
                         # if len(success_set) > 0:
                         #     idx = np.random.randint(0, len(success_set))
                         #     pseudo_idx = success_set[idx]
                         #     use_pseudo_idx = (np.random.rand() > 0.5)
                         #     print(pseudo_idx,use_pseudo_idx)
-                        for index, _ in enumerate(env_indices):
-                            self.logger.log(
-                                f"train/success_env_index_{index}",
-                                success[index],
-                                step,
-                            )
-                        self.logger.log("train/success", success.mean(), step)
+                        # for index, _ in enumerate(env_indices):
+                        #     self.logger.log(
+                        #         f"train/success_env_index_{index}",
+                        #         success[index],
+                        #         step,
+                        #     )
+                        # self.logger.log("train/success", success.mean(), step)
                     for index, env_index in enumerate(env_indices):
                         self.logger.log(
                             f"train/episode_reward_env_index_{index}",
@@ -355,26 +355,26 @@ class Experiment(experiment.Experiment):
 
                 self.logger.log("train/episode", episode, step)
 
-            if step %  self.config.setup.pseudo_interval == 0:
-                for m in range(num_tasks):
-                    if has_goals[m]:
-                        index = np.random.choice(min(pointer_cnt[m],success_goals.shape[1]))
-                        pseudo_goals[m] = success_goals[m,index]
-                        # distances = np.mean((success_goals[m,:min(pointer_cnt[m],success_goals.shape[1]),:]-multitask_obs['env_obs'][m][-3:].data.cpu().numpy())**2,axis=-1,keepdims=False)
-                        # index = np.argmin(distances)
-                        # pseudo_goals[m] = success_goals[m, index]
-                    if np.random.rand()>self.config.setup.pseudo_thres and pointer_cnt[m]>10 and step > 0:
-                        current_use_pseudo_index[m] = True
-                        print(m,pointer_cnt[m],pseudo_goals[m])
-                    else:
-                        current_use_pseudo_index[m] = False
+            # if step %  self.config.setup.pseudo_interval == 0:
+            #     for m in range(num_tasks):
+            #         if has_goals[m]:
+            #             index = np.random.choice(min(pointer_cnt[m],success_goals.shape[1]))
+            #             pseudo_goals[m] = success_goals[m,index]
+            #             # distances = np.mean((success_goals[m,:min(pointer_cnt[m],success_goals.shape[1]),:]-multitask_obs['env_obs'][m][-3:].data.cpu().numpy())**2,axis=-1,keepdims=False)
+            #             # index = np.argmin(distances)
+            #             # pseudo_goals[m] = success_goals[m, index]
+            #         if np.random.rand()>self.config.setup.pseudo_thres and pointer_cnt[m]>10 and step > 0:
+            #             current_use_pseudo_index[m] = True
+            #             print(m,pointer_cnt[m],pseudo_goals[m])
+            #         else:
+            #             current_use_pseudo_index[m] = False
 
-                for i in range(3):
-                    if len(success_sets[i]) > 1:
-                        idx = np.random.randint(0, len(success_sets[i]))
-                        pseudo_idxs[i] = success_sets[i][idx]
-                        use_pseudo_idxs[i] = (np.random.rand() > self.config.setup.pseudo_thres)
-                        print(i, pseudo_idxs[i], use_pseudo_idxs[i])
+                # for i in range(3):
+                #     if len(success_sets[i]) > 1:
+                #         idx = np.random.randint(0, len(success_sets[i]))
+                #         pseudo_idxs[i] = success_sets[i][idx]
+                #         use_pseudo_idxs[i] = (np.random.rand() > self.config.setup.pseudo_thres)
+                #         print(i, pseudo_idxs[i], use_pseudo_idxs[i])
 
             # print('!',multitask_obs['task_obs'])
             for i in range(self.config.setup.relabel_num_tasks):
@@ -405,48 +405,18 @@ class Experiment(experiment.Experiment):
                             train_mode,
                         ],
                     )  # (num_envs, action_dim)
-                    if not ori:
-                        for i in range(num_tasks):
-                            if np.random.rand()<=0.1:
-                                reuse_id = np.random.choice([0,1,2])
-                                multitask_obs_copy['task_obs'][i] = 0
-                                action[i] = self.agent.source_agents[reuse_id].sample_action(
-                                    multitask_obs=multitask_obs_copy,
-                                    modes=[
-                                        train_mode,
-                                    ],
-                                )[i]
-                                # if reuse_id in [0,1]:
-                                #     action[i] = self.agent.source_agent.sample_action(
-                                #         multitask_obs=multitask_obs_copy,
-                                #         modes=[
-                                #             train_mode,
-                                #         ],
-                                #     )[i]
-                                # else:
-                                #     action[i] = self.agent.source_agent_2.sample_action(
-                                #         multitask_obs=multitask_obs_copy,
-                                #         modes=[
-                                #             train_mode,
-                                #         ],
-                                #     )[i]
-                        # if reuse:
-                        #     for m in range(num_tasks):
-                        #         multitask_obs_copy['task_obs'][m] = reuse_id
-                        #     if reuse_id in [0,1]:
-                        #         action = self.agent.source_agent.sample_action(
-                        #             multitask_obs=multitask_obs_copy,
-                        #             modes=[
-                        #                 train_mode,
-                        #             ],
-                        #         )
-                        #     else:
-                        #         action = self.agent.source_agent_2.sample_action(
-                        #             multitask_obs=multitask_obs_copy,
-                        #             modes=[
-                        #                 train_mode,
-                        #             ],
-                        #         )
+                    # if not ori:
+                    #     for i in range(num_tasks):
+                    #         if np.random.rand()<=0.1:
+                    #             reuse_id = np.random.choice([0,1,2])
+                    #             multitask_obs_copy['task_obs'][i] = 0
+                    #             action[i] = self.agent.source_agents[reuse_id].sample_action(
+                    #                 multitask_obs=multitask_obs_copy,
+                    #                 modes=[
+                    #                     train_mode,
+                    #                 ],
+                    #             )[i]
+
 
             # run training update
             if step >= exp_config.init_steps:
@@ -456,26 +426,8 @@ class Experiment(experiment.Experiment):
                 # num_updates = 0
                 for _ in range(num_updates):
 
-                # if step == exp_config.init_steps * 10:
-                #     self.agent.update(self.replay_buffer, self.logger, step, use_expert=use_expert, expert_id=expert_id,
-                #                       relabel_id=relabel_id, sync=True, use_pig=True)
-                # elif step > exp_config.init_steps * 10:
-                #     self.agent.update(self.replay_buffer, self.logger, step, use_expert=use_expert, expert_id=expert_id,
-                #                       relabel_id=relabel_id, sync=True, use_pig=True)
-                # else:
-                #     self.agent.update(self.replay_buffer, self.logger, step, use_expert=False, expert_id=None,
-                #                       relabel_id=None)
-
-                #     if success_eval <=0.6:
-                #         use_expert = False
-                #         expert_id = None
-                #         relabel_id = None
-                #     else:
-                #         use_expert = True
-                #         expert_id = 1
-                #         relabel_id = 2
-                    expert_id = 1
-                    relabel_id = 2
+                    expert_id = None
+                    relabel_id = None
                     if step >= exp_config.init_steps*3:
                         self.agent.update(self.replay_buffer, self.logger, step,use_expert=use_expert,expert_id=expert_id,relabel_id=relabel_id)
                     else:
@@ -491,21 +443,7 @@ class Experiment(experiment.Experiment):
             for i in range(self.config.setup.relabel_num_tasks):
                 for j in range(self.config.setup.relabel_range):
                     next_multitask_obs['task_obs'][i*self.config.setup.relabel_range+j] = i
-            # if self.config.setup.relabel_num_tasks==3:
-            #     for j in range(self.config.setup.relabel_range):
-            #         reward[0 + j] = reward[0 + j] if info[0+j]['success'] else 0
-            #         reward[10 + j] = reward[10 + j] if info[10 + j]['success'] else 0
-            #         reward[20 + j] = reward[20 + j] if info[20 + j]['success'] else 0
-            # for i in range(self.config.setup.relabel_num_tasks):
-            #     for j in range(self.config.setup.relabel_range):
-            #         reward[i*self.config.setup.relabel_range+j] = reward[i*self.config.setup.relabel_range+j] if info[i*self.config.setup.relabel_range+j]['success'] else 0
-            # elif self.config.setup.relabel_num_tasks == 1:
-            #     for j in range(self.config.setup.relabel_range):
-            #         reward[0 + j] = reward[0 + j] if info[0 + j]['success'] else 0
-            # elif self.config.setup.relabel_num_tasks==3:
-            #     for j in range(self.config.setup.relabel_range):
-            #         reward[20 + j] = reward[20 + j] if info[20+j]['success'] else 0
-            # print('!!', next_multitask_obs['task_obs'])
+
             episode_reward += reward
             if "success" in self.metrics_to_track:
                 success += np.asarray([x["success"] for x in info])
